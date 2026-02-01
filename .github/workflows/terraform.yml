@@ -1,0 +1,34 @@
+name: Terraform Infrastructure CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply (only on master)
+        if: github.ref == 'refs/heads/master'
+        run: terraform apply -auto-approve
